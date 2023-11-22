@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Images
+*.ppm
+
+# Exclude vscode Folders
+.vscode/tasks.json
