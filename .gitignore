@@ -35,4 +35,4 @@
 *.ppm
 
 # Exclude vscode Folders
-.vscode/tasks.json
+.vscode/*
