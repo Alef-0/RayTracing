@@ -1,11 +1,9 @@
-// Ficava importando base.cpp aqui e no scenes
-// Pra corrigir precisa de algo com o ifndef só que não entendi
+#ifndef SHARED
+#define SHARED
+    #include "base.cpp"
+    #include "scenes.cpp"
+#endif
 
-// #ifndef SHARED
-//     #include "base.cpp"
-// #endif
-
-#include "scenes.cpp"
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -47,23 +45,23 @@ pair<vector<Sphere>, vector<Plane>> pegar_objetos (){
         double raio;
         cout << i << "- Coloque o centro da esfera (X,Y,Z): ";
         cin >> centro.x >> centro.y >> centro.z;
-        cout << i << "- Coloque agora a cor (R,G,B): ";
-        cin >> color.x >> color.y >> color.z;
-        cout << i << "- Agora o raio: ";
+        cout << i << "- Coloque Agora o raio: ";
         cin >> raio;
-
+        cout << i << "- Coloque agora a cor (R,G,B) [0,1]: ";
+        cin >> color.x >> color.y >> color.z;
+        
         esferas.push_back(Sphere{centro,raio,color});
     }
 
     cout << "Coloque quantos planos: ";
     cin >> quant; for (int i = 0; i < quant; i++){
         R3Vector ponto, color, normal;
-        cout << i << "- Coloque o vetor normal (X,Y,Z): ";
-        cin >> normal.x >> normal.y >> normal.z;
-        cout << i << "- Coloque agora a cor (R,G,B): ";
-        cin >> color.x >> color.y >> color.z;
         cout << i << "- Agora um ponto do plano (X,Y,Z): ";
         cin >> ponto.x >> ponto.y >> ponto.z;
+        cout << i << "- Coloque o vetor normal (X,Y,Z): ";
+        cin >> normal.x >> normal.y >> normal.z;
+        cout << i << "- Coloque agora a cor (R,G,B) [0,1]: ";
+        cin >> color.x >> color.y >> color.z;
 
         planos.push_back(Plane{ponto,normal,color});
     }
@@ -100,8 +98,8 @@ vector<vector<R3Vector>> make_screen(R3Vector cima, R3Vector direita, R3Vector o
     vector<Sphere> esferas, vector<Plane> planos, int altura, int largura){
     
     // Ver o deslocamento
-    R3Vector des_horizontal = scalarProduct(direita,(double) 2/(largura-1));
-    R3Vector des_vertical = scalarProduct(cima, (double) 2/(altura-1));
+    R3Vector des_horizontal = scalarProduct(direita,(double) 2/(largura - 1));
+    R3Vector des_vertical = scalarProduct(cima, (double) 2/(altura - 1));
 
     // Iterar e ver as interseções
     R3Vector canto_limite_inferior = subVector(subVector(origem, cima),direita);
@@ -120,8 +118,6 @@ vector<vector<R3Vector>> make_screen(R3Vector cima, R3Vector direita, R3Vector o
             if (achou && t >= 0) {colors[x][y] = color;}
             else {colors[x][y] = {0,0,0};}
         
-            // cout << direcao.x << " "  << direcao.y << " " << direcao.z << " " << endl; 
-            // cout << canto_atual.x << " "  << canto_atual.y << " "  << canto_atual.z << endl;
         // Atualizar sem multiplicar
         canto_atual = addVector(canto_atual, des_vertical);
         }
@@ -147,7 +143,6 @@ void print_ppm(vector<vector<R3Vector>> colors, int altura, int largura){
     }
     
     file.close();
-
 }
 
 int main(){

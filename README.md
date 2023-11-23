@@ -12,10 +12,10 @@ O tipo de entrada precisa ser no formato de 3 números seguidos para as componen
 
 * Esferas
     *   **Centro**: O ponto que define o seu centro.
-    *   **Cor**: Um vetor com 3 valores de 0 a 1 para RGB.
     *   **Raio**: O tamanho de seu raio.
+    *   **Cor**: Um vetor com 3 valores de 0 a 1 para RGB.
 * Plano:
+    *   **Ponto**: Um ponto para calcular a orientação do plano.
     *   **Normal**: O vetor que define a orientação do plano.
     *   **Cor**: Um vetor com 3 valores de 0 a 1 para RGB.
-    *   **Ponto**: Um ponto para calcular a orientação do plano.
     

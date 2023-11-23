@@ -1,6 +1,8 @@
 #ifndef SHARED
+#define SHARED
     #include "base.cpp"
 #endif
+
 #include <iostream>
 using namespace std;
 
@@ -17,11 +19,9 @@ class Sphere{
     };
 
     pair<bool, double> intersect (R3Vector origem, R3Vector direcao){
-        R3Vector temp;
+        R3Vector temp = subVector(origem, centro);;
         double a = dotProduct(direcao, direcao);
-        temp = subVector(origem, centro);
         double b = dotProduct(scalarProduct(temp, 2), direcao);
-        temp = subVector(origem, centro);
         double c = dotProduct(temp, temp) - (raio * raio);
 
         // Praticamente bascara
@@ -88,8 +88,8 @@ class Plane{
 };
 
 // int main(){
-//     // Sphere teste = Sphere(R3Vector{3,0,7}, 7, R3Vector{100,100,100});
-//     // teste.intersect(R3Vector{0,0,0}, R3Vector{1,0,0});
+//     Sphere teste = Sphere(R3Vector{3,0,7}, 7, R3Vector{100,100,100});
+//     teste.intersect(R3Vector{0,0,0}, R3Vector{1,0,0});
 
 //     Plane teste = Plane(R3Vector{0,0,0},R3Vector{0,0,1},R3Vector{100,100,100});
 //     teste.intersect(R3Vector{0,0,1}, R3Vector{1,0,1});
