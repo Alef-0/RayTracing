@@ -18,4 +18,12 @@ O tipo de entrada precisa ser no formato de 3 números seguidos para as componen
     *   **Ponto**: Um ponto para calcular a orientação do plano.
     *   **Normal**: O vetor que define a orientação do plano.
     *   **Cor**: Um vetor com 3 valores de 0 a 1 para RGB.
-    
+
+
+# Como rodar o projeto:
+
+mkdir build
+cd build 
+cmake ..
+make
+./rayTracing

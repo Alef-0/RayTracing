@@ -36,3 +36,8 @@
 
 # Exclude vscode Folders
 .vscode/*
+
+# Build
+.build/*
+**/.build
+**/build
