@@ -22,8 +22,10 @@ O tipo de entrada precisa ser no formato de 3 números seguidos para as componen
 
 # Como rodar o projeto:
 
-mkdir build
+```
+mkdir build 
 cd build 
-cmake ..
-make
-./rayTracing
+cmake .. 
+make 
+./rayTracing 
+```
