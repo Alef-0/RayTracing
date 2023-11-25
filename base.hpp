@@ -1,3 +1,6 @@
+#ifndef BASE
+#define BASE
+
 #include <math.h>
 #include <iostream>
 
@@ -51,3 +54,5 @@ R3Vector normalize(R3Vector a){
     a.z = a.z/total;
     return a;
 }
+
+#endif

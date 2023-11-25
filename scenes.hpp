@@ -1,8 +1,7 @@
-#ifndef SHARED
-#define SHARED
-    #include "base.cpp"
-#endif
-
+#ifndef SCENES
+#define SCENES
+    
+#include "base.hpp"
 #include <iostream>
 using namespace std;
 
@@ -19,10 +18,10 @@ class Sphere{
     };
 
     pair<bool, double> intersect (R3Vector origem, R3Vector direcao){
-        R3Vector temp = subVector(origem, centro);;
+        R3Vector line = subVector(origem, centro);;
         double a = dotProduct(direcao, direcao);
-        double b = dotProduct(scalarProduct(temp, 2), direcao);
-        double c = dotProduct(temp, temp) - (raio * raio);
+        double b = dotProduct(scalarProduct(line, 2), direcao);
+        double c = dotProduct(line, line) - (raio * raio);
 
         // Praticamente bascara
         double delta = b*b - 4*a*c;
@@ -75,7 +74,7 @@ class Plane{
             return make_pair(false, 0);
         }
         else{
-            double t = (dotProduct(normal, ponto) - dotProduct(normal, origem))/teste_paralelo;
+            double t = dotProduct(subVector(ponto, origem), normal)/teste_paralelo;
             // cout << "Ele se cruza em " << t << endl;
             // if (t < 0) cout << "Entretanto é atrás da tela" << endl;
             return make_pair(true, t);
@@ -94,3 +93,5 @@ class Plane{
 //     Plane teste = Plane(R3Vector{0,0,0},R3Vector{0,0,1},R3Vector{100,100,100});
 //     teste.intersect(R3Vector{0,0,1}, R3Vector{1,0,1});
 // }
+
+#endif
