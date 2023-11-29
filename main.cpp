@@ -69,6 +69,37 @@ pair<vector<Sphere>, vector<Plane>> pegar_objetos (){
     return make_pair(esferas, planos);
 }
 
+Mesh pegar_triangulos(){
+    vector<triangle> triangulos;
+    vector<R3Vector> vertices;;
+    
+    cout << "Coloque a quantidade de triangulos: ";
+    int quant; cin >> quant; if (quant == 0) return Mesh(triangulos, vertices);
+    cout << "Coloque quantos vertices: ";
+    int quant_vertices; cin >> quant_vertices;
+    
+    cout << "Coloque as vertices da forma (X,Y,Z): " << endl;
+    for(int i = 0; i < quant_vertices; i++){
+        R3Vector ponto;
+        cin >> ponto.x >> ponto.y >> ponto.z;
+        vertices.push_back(ponto);
+    }
+    cout << "Qual vai ser a cor da mesh (R,G,B) de [0,1]: ";
+    R3Vector cor; cin >> cor.x >> cor.y >> cor.z;
+
+    cout << "Coloque agora os pare de vertice que formam cada triangulo, com o indice de onde eles estão: " << endl;
+    for (int i = 0; i < quant; i++){
+        R3Vector p0, p1, p2;
+        int a, b, c;
+        cin >> a >> b >> c;
+        triangulos.push_back(triangle(vertices[a], vertices[b], vertices[c], cor));
+    }
+
+    // Todo calcular a normal dos vertices
+
+    return Mesh(triangulos, vertices);
+}
+
 int main(){
     R3Vector C, M, UP;
     double distancia, altura, largura;
@@ -79,10 +110,11 @@ int main(){
     R3Vector origem = addVector(C, scalarProduct(W, distancia)); // Pegar a origem da tela
 
     // Pegar agora os objetos das cenas
-    vector<Sphere> esferas; vector<Plane> planos;
+    vector<Sphere> esferas; vector<Plane> planos; 
     tie (esferas, planos) = pegar_objetos();
+    Mesh triangulos = pegar_triangulos();
 
     // Checar agora a interseção
-    vector<vector<R3Vector>> colors = make_screen(U, V, origem, C, esferas, planos, altura, largura);
+    vector<vector<R3Vector>> colors = make_screen(U, V, origem, C, esferas, planos, triangulos ,altura, largura);
     print_ppm(colors, altura, largura);
 }

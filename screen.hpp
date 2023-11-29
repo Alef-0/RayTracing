@@ -11,7 +11,7 @@
 
 using namespace std;
 
-tuple <bool, double, R3Vector> checar_colisao(vector<Sphere> esferas, vector<Plane> planos, 
+tuple <bool, double, R3Vector> checar_colisao(vector<Sphere> esferas, vector<Plane> planos, Mesh triangulos,
     R3Vector origem, R3Vector direcao){
     pair <bool, double> resposta = {false, INT_MAX};
     bool achou; double t; R3Vector color;
@@ -32,12 +32,20 @@ tuple <bool, double, R3Vector> checar_colisao(vector<Sphere> esferas, vector<Pla
             color = i->get_color();
         }
     }
+    // Checar para triangulos
+    for (triangle i : triangulos.get_triangles()){
+        tie(achou, t) = i.intersect(origem, direcao);
+        if (achou && t >= 0 && t < resposta.second){
+            resposta = {true,t};
+            color = i.get_color();
+        }
+    }
 
     return make_tuple(resposta.first, resposta.second, color);
 }
 
 vector<vector<R3Vector>> make_screen(R3Vector cima, R3Vector direita, R3Vector origem, R3Vector camera, 
-    vector<Sphere> esferas, vector<Plane> planos, int altura, int largura){
+    vector<Sphere> esferas, vector<Plane> planos, Mesh triangulos, int altura, int largura){
     
     // Ver o deslocamento
     R3Vector des_horizontal = scalarProduct(direita,(double) 2/(largura - 1));
@@ -56,7 +64,7 @@ vector<vector<R3Vector>> make_screen(R3Vector cima, R3Vector direita, R3Vector o
     for (int x = 0; x < largura; x++){
         for (int y = 0; y < altura; y++){
             R3Vector direcao = subVector(canto_atual, camera); // Pegar o vetor direcao
-            tie (achou, t, color) = checar_colisao(esferas, planos, canto_atual, direcao); // Checar a colisao com cada um
+            tie (achou, t, color) = checar_colisao(esferas, planos, triangulos, canto_atual, direcao); // Checar a colisao com cada um
             if (achou && t >= 0) {colors[x][y] = color;}
             else {colors[x][y] = {0,0,0};}
         

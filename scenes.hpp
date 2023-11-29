@@ -85,7 +85,8 @@ class triangle{
     R3Vector v0, v1;
     double d00, d01, d11;
     double d20, d21, invDenom;
-
+    
+    // Razão da interseção pode ser referenciada no capítulo 3.4 de Real-Time Collision Detection
     public:
     triangle(R3Vector p1, R3Vector p2, R3Vector p3, R3Vector color){
         this->points[0] = p1;
@@ -104,7 +105,6 @@ class triangle{
         this->d11 = dotProduct(v1, v1);
         this->invDenom = 1.0 / (d00 * d11 - d01 * d01);
     }
-
     pair<bool, double> intersect(R3Vector origem, R3Vector direcao){
         // Testar se pelo menos está no plano
         double teste_paralelo = dotProduct(normal, direcao);
@@ -120,7 +120,6 @@ class triangle{
         if (alpha > 0 && beta > 0 && gamma > 0 && alpha + beta + gamma <= 1) return make_pair(true, t);
         return make_pair(false, -1);
     }
-
     tuple<double, double, double> barycentric_cordinates(R3Vector target){
         // Pegar os vetores para as areas
         R3Vector v2 = subVector(target, points[0]);
@@ -131,25 +130,44 @@ class triangle{
         double beta  = (d11 * d20 - d01 * d21) * invDenom;
         double gamma = (d00 * d21 - d01 * d20) * invDenom;
         double alpha = 1.0 - beta - gamma;
-
         return make_tuple(alpha, beta, gamma);
     }
-
     R3Vector get_color() {return color;}
+    bool contem(R3Vector alvo){
+        for (R3Vector p : points){
+            if (p.x == alvo.x && p.y == alvo.y && p.z == alvo.z) return true;
+        }
+        return false;
+    }
 };
 
-int main(){
-    triangle teste = triangle(R3Vector{3,4,5},R3Vector{9,3,2},R3Vector{1,5,6}, R3Vector{1,0,0});
-    R3Vector origem = {0,0,0};
-    R3Vector direcao = {5.6,3.7,3.7};
+class Mesh{
+    vector<triangle> triangulos;
+    vector<R3Vector> vertices;
+    vector<R3Vector> normal_vertices;
 
-    bool vai; double t;
-    tie (vai, t) = teste.intersect(origem, direcao);
-    R3Vector ponto = addVector(origem, scalarProduct(direcao, t));
-    if (vai) {
-        cout << "Foi em t = " << t;         
-        printf("; Achou o ponto (%lf, %lf, %lf) \n", ponto.x, ponto.y, ponto.z);
+    public:
+    Mesh(vector<triangle> tri, vector<R3Vector> vert){
+        this->triangulos = tri;
+        this->vertices = vert;
+        normal_vertices.resize(vert.size());
     }
-}
+
+    vector<triangle> get_triangles(){return triangulos;}
+};
+
+// int main(){
+//     triangle teste = triangle(R3Vector{3,4,5},R3Vector{9,3,2},R3Vector{1,5,6}, R3Vector{1,0,0});
+//     R3Vector origem = {0,0,0};
+//     R3Vector direcao = {5.6,3.7,3.7};
+
+//     bool vai; double t;
+//     tie (vai, t) = teste.intersect(origem, direcao);
+//     R3Vector ponto = addVector(origem, scalarProduct(direcao, t));
+//     if (vai) {
+//         cout << "Foi em t = " << t;         
+//         printf("; Achou o ponto (%lf, %lf, %lf) \n", ponto.x, ponto.y, ponto.z);
+//     }
+// }
 
 #endif
