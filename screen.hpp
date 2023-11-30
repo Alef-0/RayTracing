@@ -10,30 +10,31 @@
 #include <tuple>
 
 using namespace std;
+#define WINDOW 1.0
 
-tuple <bool, double, R3Vector> checar_colisao(vector<Sphere> esferas, vector<Plane> planos, Mesh triangulos,
+tuple <bool, double, R3Vector> checar_colisao(vector<Sphere> esferas, vector<Plane> planos, Mesh malha,
     R3Vector origem, R3Vector direcao){
     pair <bool, double> resposta = {false, INT_MAX};
     bool achou; double t; R3Vector color;
     
     // Checar para esferas
-    for (auto i = esferas.begin(); i != esferas.end(); i++){
-        tie (achou, t) = i->intersect(origem, direcao);
+    for (Sphere i : esferas){
+        tie (achou, t) = i.intersect(origem, direcao);
         if (achou && t >= 0 && t < resposta.second){
             resposta = {true, t};
-            color = i->get_color();
+            color = i.get_color();
         }
     }
     // Checar para planos
-    for (auto i = planos.begin(); i != planos.end(); i++){
-        tie (achou, t) = i->intersect(origem, direcao);
+    for (Plane i : planos){
+        tie (achou, t) = i.intersect(origem, direcao);
         if (achou && t >= 0 && t < resposta.second){
             resposta = {true, t};
-            color = i->get_color();
+            color = i.get_color();
         }
     }
     // Checar para triangulos
-    for (triangle i : triangulos.get_triangles()){
+    for (triangle i : malha.get_triangles()){
         tie(achou, t) = i.intersect(origem, direcao);
         if (achou && t >= 0 && t < resposta.second){
             resposta = {true,t};
@@ -48,11 +49,12 @@ vector<vector<R3Vector>> make_screen(R3Vector cima, R3Vector direita, R3Vector o
     vector<Sphere> esferas, vector<Plane> planos, Mesh triangulos, int altura, int largura){
     
     // Ver o deslocamento
-    R3Vector des_horizontal = scalarProduct(direita,(double) 2/(largura - 1));
-    R3Vector des_vertical = scalarProduct(cima, (double) 2/(altura - 1));
+    R3Vector des_horizontal = scalarProduct(direita,(double) 2 * WINDOW / (largura - 1));
+    R3Vector des_vertical = scalarProduct(cima, (double) 2 * WINDOW / (altura - 1));
 
     // Iterar e ver as interseções
-    R3Vector canto_limite_inferior = subVector(subVector(origem, cima),direita);
+    R3Vector canto_limite_inferior = subVector(subVector(origem, scalarProduct(cima,WINDOW)
+                                                ),scalarProduct(direita, WINDOW));
     R3Vector canto_atual = canto_limite_inferior;
 
     // Criando o vetor de pixels
@@ -93,7 +95,6 @@ void print_ppm(vector<vector<R3Vector>> colors, int altura, int largura){
         }
         file << endl;
     }
-    
     file.close();
 }
 

@@ -7,6 +7,7 @@
 #include <fstream>
 #include <climits>
 #include <tuple>
+#include <array>
 
 using namespace std;
 
@@ -71,10 +72,11 @@ pair<vector<Sphere>, vector<Plane>> pegar_objetos (){
 
 Mesh pegar_triangulos(){
     vector<triangle> triangulos;
-    vector<R3Vector> vertices;;
+    vector<R3Vector> vertices;
+    vector <array<int,3>> indices;
     
     cout << "Coloque a quantidade de triangulos: ";
-    int quant; cin >> quant; if (quant == 0) return Mesh(triangulos, vertices);
+    int quant; cin >> quant; if (quant == 0) return Mesh(triangulos, vertices, indices);
     cout << "Coloque quantos vertices: ";
     int quant_vertices; cin >> quant_vertices;
     
@@ -84,20 +86,24 @@ Mesh pegar_triangulos(){
         cin >> ponto.x >> ponto.y >> ponto.z;
         vertices.push_back(ponto);
     }
+    
+    cout << "Coloque agora os pare de vertice que formam cada triangulo, com o indice de onde eles estao: " << endl;
+    for (int i = 0; i < quant; i++){
+        int a, b, c;
+        cin >> a >> b >> c;
+        indices.push_back(array<int,3>{a,b,c});
+    }
     cout << "Qual vai ser a cor da mesh (R,G,B) de [0,1]: ";
     R3Vector cor; cin >> cor.x >> cor.y >> cor.z;
 
-    cout << "Coloque agora os pare de vertice que formam cada triangulo, com o indice de onde eles estão: " << endl;
-    for (int i = 0; i < quant; i++){
-        R3Vector p0, p1, p2;
-        int a, b, c;
-        cin >> a >> b >> c;
-        triangulos.push_back(triangle(vertices[a], vertices[b], vertices[c], cor));
+    // Colocar os triangulos
+    for (array<int,3> i : indices){
+        triangulos.push_back(triangle(vertices[i[0]], vertices[i[1]], vertices[i[2]], cor));
     }
 
     // Todo calcular a normal dos vertices
 
-    return Mesh(triangulos, vertices);
+    return Mesh(triangulos, vertices, indices);
 }
 
 int main(){
@@ -112,9 +118,9 @@ int main(){
     // Pegar agora os objetos das cenas
     vector<Sphere> esferas; vector<Plane> planos; 
     tie (esferas, planos) = pegar_objetos();
-    Mesh triangulos = pegar_triangulos();
+    Mesh malha = pegar_triangulos();
 
     // Checar agora a interseção
-    vector<vector<R3Vector>> colors = make_screen(U, V, origem, C, esferas, planos, triangulos ,altura, largura);
+    vector<vector<R3Vector>> colors = make_screen(U, V, origem, C, esferas, planos, malha ,altura, largura);
     print_ppm(colors, altura, largura);
 }

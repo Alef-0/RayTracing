@@ -5,7 +5,11 @@
 #include <iostream>
 #include <string>
 #include <format>
+#include <vector>
+#include <array>
+
 using namespace std;
+
 #define SMALL 1.0e-9
 
 
@@ -84,7 +88,7 @@ class triangle{
     // Values to cache
     R3Vector v0, v1;
     double d00, d01, d11;
-    double d20, d21, invDenom;
+    double invDenom;
     
     // Razão da interseção pode ser referenciada no capítulo 3.4 de Real-Time Collision Detection
     public:
@@ -108,7 +112,9 @@ class triangle{
     pair<bool, double> intersect(R3Vector origem, R3Vector direcao){
         // Testar se pelo menos está no plano
         double teste_paralelo = dotProduct(normal, direcao);
-        if (fabs(teste_paralelo) < SMALL) { return make_pair(false, -1);}
+        if (fabs(teste_paralelo) < SMALL) { 
+            return make_pair(false, -1);
+        }
         double t = dotProduct(subVector(points[0], origem), normal)/teste_paralelo;
         if (t < 0) return make_pair(false, -1);
         R3Vector alvo = addVector(origem, scalarProduct(direcao, t));
@@ -142,14 +148,16 @@ class triangle{
 };
 
 class Mesh{
-    vector<triangle> triangulos;
-    vector<R3Vector> vertices;
-    vector<R3Vector> normal_vertices;
+    vector <triangle> triangulos;
+    vector <R3Vector> vertices;
+    vector <R3Vector> normal_vertices;
+    vector <array<int,3>> indices;
 
     public:
-    Mesh(vector<triangle> tri, vector<R3Vector> vert){
+    Mesh(vector<triangle> tri, vector<R3Vector> vert, vector <array<int,3>> ind){
         this->triangulos = tri;
         this->vertices = vert;
+        this->indices = ind;
         normal_vertices.resize(vert.size());
     }
 

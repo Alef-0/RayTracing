@@ -18,4 +18,12 @@ O tipo de entrada precisa ser no formato de 3 números seguidos para as componen
     *   **Ponto**: Um ponto para calcular a orientação do plano.
     *   **Normal**: O vetor que define a orientação do plano.
     *   **Cor**: Um vetor com 3 valores de 0 a 1 para RGB.
+* Malha:
+    * **Quantidade de triângulos**: Quantos triângulos devem ter.
+    * **Quantidade de vertices**: Minimo de 3.
+    * **Vertices**: Os pontos (X,Y,Z) dos vertices.
+    * **Vertices no triângulo**: Um trio que referencia o indíce 
+    (começando com zero) dos vertices anteriores para ser o triângulo.
+    * **Cor**: Toda a malha vai ter a mesma cor. De 0 a 1 para RGB.
+
     
