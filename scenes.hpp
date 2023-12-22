@@ -113,16 +113,16 @@ class triangle{
         this->points[0] = p1;
         this->points[1] = p2;
         this->points[2] = p3;
-        calcular_constantes();
         this->color = color;
+
+        calcular_constantes();
     }
     
-    void calcular_constantes(){
+    void calcular_constantes(){   
         // Calculate normal and area
         R3Vector v0v1 = subVector(this->points[1], this->points[0]);
         R3Vector v0v2 = subVector(this->points[2], this->points[0]);
         this->normal = normalize(crossProduct(v0v1, v0v2));
-        
         // Precache constantes
         this->v0 = subVector(this->points[1], this->points[0]); 
         this->v1 = subVector(this->points[2], this->points[0]); 
@@ -173,7 +173,7 @@ class triangle{
         this->points[0] = translation(this->points[0], dx,dy,dz);
         this->points[1] = translation(this->points[1], dx,dy,dz);
         this->points[2] = translation(this->points[2], dx,dy,dz);
-        // Como a normal e calculada pelos pontos ela permanecerá igual
+        calcular_constantes(); // melhor prevenir
     }
     void auto_rotation(double angle, char choice){
         // Retornar os valores iniciais

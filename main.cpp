@@ -138,7 +138,7 @@ int main(){
         cout << "Rotacao [r/R] ou translacao [t/T]?\n"; cin >>choice;
         if (choice == 'r' || choice == 'R'){
             double angulo;
-            cout << "Eixo que você quer rotacionar e o angulo (graus): ";
+            cout << "Eixo que voce quer rotacionar e o angulo (graus): ";
             cin >> choice >> angulo ;
             if (choice != 'x' && choice != 'y' && choice != 'z') {cout << "invalido\n"; break;}
             

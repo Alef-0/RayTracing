@@ -27,7 +27,7 @@ O tipo de entrada precisa ser no formato de 3 números seguidos para as componen
     * **Cor**: Os triangulos terão cores indivduais. De 0 a 1 para RGB.
 
 Depois vai uma série de perguntas se vai querer rotacionar:
-* Translação: Disponibilize um dx,dy e dz
-* Rotação: Disponibilize o eixo e o angulo em graus.
+* **Translação**: Disponibilize um dx, dy e dz.
+* **Rotação**: Disponibilize o eixo e o angulo em graus.
 
     
