@@ -2,7 +2,7 @@
 #define SCENES
     
 #include "base.hpp"
-#include "rotation.cpp"
+#include "transformations.hpp"
 
 #include <iostream>
 #include <string>
@@ -55,9 +55,12 @@ class Sphere{
     }
     Sphere* get_sphere(){return this;}
 
-    void rotation_translation(double dx, double dy, double dz){
+    void auto_translation(double dx, double dy, double dz){
         this->centro = translation(centro, dx, dy, dz);
         // Não muda mais nada
+    }
+    void auto_rotation(double angle, char choice){
+        centro = rotation_all(centro, angle, choice);
     }
 };
 
@@ -84,9 +87,13 @@ class Plane{
 
     R3Vector get_color(){return color;}
     Plane* get_plane(){return this;}
-    void rotation_translation(double dx, double dy, double dz){
+    void auto_translation(double dx, double dy, double dz){
         this->ponto = translation(this->ponto, dx,dy, dz);
         // Normal permanece
+    }
+    void auto_rotation(double angle, char choice){
+        ponto = rotation_all(ponto, angle, choice);
+        normal = rotation_all(normal, angle, choice);
     }
 };
 
@@ -106,19 +113,25 @@ class triangle{
         this->points[0] = p1;
         this->points[1] = p2;
         this->points[2] = p3;
-        // Calculate normal and area
-        R3Vector v0v1 = subVector(p2,p1);
-        R3Vector v0v2 = subVector(p3,p1);
-        this->normal = normalize(crossProduct(v0v1, v0v2));
+        calcular_constantes();
         this->color = color;
-        // Precache 
-        this->v0 = subVector(points[1], points[0]); 
-        this->v1 = subVector(points[2], points[0]); 
-        this->d00 = dotProduct(v0, v0);
-        this->d01 = dotProduct(v0, v1);
-        this->d11 = dotProduct(v1, v1);
-        this->invDenom = 1.0 / (d00 * d11 - d01 * d01);
     }
+    
+    void calcular_constantes(){
+        // Calculate normal and area
+        R3Vector v0v1 = subVector(this->points[1], this->points[0]);
+        R3Vector v0v2 = subVector(this->points[2], this->points[0]);
+        this->normal = normalize(crossProduct(v0v1, v0v2));
+        
+        // Precache constantes
+        this->v0 = subVector(this->points[1], this->points[0]); 
+        this->v1 = subVector(this->points[2], this->points[0]); 
+        this->d00 = dotProduct(this->v0, this->v0);
+        this->d01 = dotProduct(this->v0, this->v1);
+        this->d11 = dotProduct(this->v1, this->v1);
+        this->invDenom = 1.0 / (this->d00 * this->d11 - this->d01 * this->d01);
+    }
+
     pair<bool, double> intersect(R3Vector origem, R3Vector direcao){
         // Testar se pelo menos está no plano
         double teste_paralelo = dotProduct(normal, direcao);
@@ -133,7 +146,7 @@ class triangle{
         double alpha, beta, gamma;
         tie (alpha, beta, gamma) = barycentric_cordinates(alvo);
         // cout << "Valores de alpha: " << alpha << ", beta: " << beta << ", e gamma: " << gamma << endl;
-        if (alpha > 0 && beta > 0 && gamma > 0) return make_pair(true, t);
+        if (alpha >= 0 && beta >= 0 && gamma >= 0) return make_pair(true, t);
         return make_pair(false, -1);
     }
     tuple<double, double, double> barycentric_cordinates(R3Vector target){
@@ -156,13 +169,20 @@ class triangle{
         return false;
     }
 
-    void rotation_translation(double dx, double dy, double dz){
+    void auto_translation(double dx, double dy, double dz){
         this->points[0] = translation(this->points[0], dx,dy,dz);
         this->points[1] = translation(this->points[1], dx,dy,dz);
         this->points[2] = translation(this->points[2], dx,dy,dz);
         // Como a normal e calculada pelos pontos ela permanecerá igual
     }
-    
+    void auto_rotation(double angle, char choice){
+        // Retornar os valores iniciais
+        this->points[0] = rotation_all(this->points[0], angle, choice); 
+        this->points[1] = rotation_all(this->points[1], angle, choice); 
+        this->points[2] = rotation_all(this->points[2], angle, choice); 
+        // Calcular a normal
+        calcular_constantes();
+    }
 };
 
 class Mesh{

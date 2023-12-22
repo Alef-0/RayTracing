@@ -3,7 +3,6 @@
 
 #include "base.hpp"
 #include "scenes.hpp"
-#include "rotation.cpp"
 
 #include <iostream>
 #include <vector>
@@ -12,7 +11,7 @@
 #include <tuple>
 
 using namespace std;
-#define WINDOW 0.7
+#define WINDOW 1.0
 int counter = 0;
 
 tuple <bool, double, R3Vector> checar_colisao(vector<Sphere> esferas, vector<Plane> planos, Mesh malha,
@@ -23,7 +22,7 @@ tuple <bool, double, R3Vector> checar_colisao(vector<Sphere> esferas, vector<Pla
     // Checar para esferas
     for (Sphere i : esferas){
         tie (achou, t) = i.intersect(origem, direcao);
-        if (achou && t >= 0 && t < resposta.second){
+        if (achou && t >= 0 && t <= resposta.second){
             resposta = {true, t};
             color = i.get_color();
         }
@@ -31,7 +30,7 @@ tuple <bool, double, R3Vector> checar_colisao(vector<Sphere> esferas, vector<Pla
     // Checar para planos
     for (Plane i : planos){
         tie (achou, t) = i.intersect(origem, direcao);
-        if (achou && t >= 0 && t < resposta.second){
+        if (achou && t >= 0 && t <= resposta.second){
             resposta = {true, t};
             color = i.get_color();
         }
@@ -39,7 +38,7 @@ tuple <bool, double, R3Vector> checar_colisao(vector<Sphere> esferas, vector<Pla
     // Checar para triangulos
     for (auto i : malha.return_triangles()){
         tie(achou, t) = i.intersect(origem, direcao);
-        if (achou && t >= 0 && t < resposta.second){
+        if (achou && t >= 0 && t <= resposta.second){
             resposta = {true,t};
             color = i.get_color();
         }

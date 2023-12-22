@@ -136,7 +136,26 @@ int main(){
         
         // Especificar rotacao
         cout << "Rotacao [r/R] ou translacao [t/T]?\n"; cin >>choice;
-        if (choice == 'r' || choice == 'R') break;
+        if (choice == 'r' || choice == 'R'){
+            double angulo;
+            cout << "Eixo que você quer rotacionar e o angulo (graus): ";
+            cin >> choice >> angulo ;
+            if (choice != 'x' && choice != 'y' && choice != 'z') {cout << "invalido\n"; break;}
+            
+            // Rotacionar centros
+            for (int i = 0; i < esferas.size(); i++){
+                esferas[i].get_sphere()->auto_rotation(angulo, choice);
+            } 
+            // Rotacionar planos
+            for (int i = 0; i < planos.size(); i++){
+                planos[i].get_plane()->auto_rotation(angulo, choice);
+            } 
+            // Rotacionar triangulos
+            vector <triangle>* triangulos = malha.get_triangles();
+            for (int i = 0; i < triangulos->size() ; i++){
+                (*triangulos)[i].auto_rotation(angulo, choice);
+            }
+        }
         else if (choice == 't' || choice == 'T'){
             double dx, dy, dz;
             cout << "Coloque os valores de dx, dy e dz: ";
@@ -144,17 +163,18 @@ int main(){
             
             //mover esferas
             for (int i = 0; i < esferas.size(); i++){
-                esferas[i].get_sphere()->rotation_translation(dx,dy,dz);
+                esferas[i].get_sphere()->auto_translation(dx,dy,dz);
             }
             // Mover planos
             for (int i = 0; i < planos.size(); i++){
-                planos[i].get_plane()->rotation_translation(dx,dy,dz);
+                planos[i].get_plane()->auto_translation(dx,dy,dz);
             }
             // Mover triangulos
             vector <triangle>* triangulos = malha.get_triangles();
             for (int i = 0; i < triangulos->size() ; i++){
-                (*triangulos)[i].rotation_translation(dx,dy,dz);
+                (*triangulos)[i].auto_translation(dx,dy,dz);
             }
         }
+        else break;
     }
 }

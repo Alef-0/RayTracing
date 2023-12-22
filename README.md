@@ -24,6 +24,10 @@ O tipo de entrada precisa ser no formato de 3 números seguidos para as componen
     * **Vertices**: Os pontos (X,Y,Z) dos vertices.
     * **Vertices no triângulo**: Um trio que referencia o indíce 
     (começando com zero) dos vertices anteriores para ser o triângulo.
-    * **Cor**: Toda a malha vai ter a mesma cor. De 0 a 1 para RGB.
+    * **Cor**: Os triangulos terão cores indivduais. De 0 a 1 para RGB.
+
+Depois vai uma série de perguntas se vai querer rotacionar:
+* Translação: Disponibilize um dx,dy e dz
+* Rotação: Disponibilize o eixo e o angulo em graus.
 
     
