@@ -93,12 +93,18 @@ Mesh pegar_triangulos(){
         cin >> a >> b >> c;
         indices.push_back(array<int,3>{a,b,c});
     }
-    cout << "Qual vai ser a cor da mesh (R,G,B) de [0,1]: ";
-    R3Vector cor; cin >> cor.x >> cor.y >> cor.z;
+    cout << "Qual vai ser a cor das meshes (R,G,B) de [0,1]: ";
+    vector<R3Vector> cores; 
+    R3Vector cor;
+    for (int i = 0; i < quant; i++){
+        cin >> cor.x >> cor.y >> cor.z;
+        cores.push_back(cor);
+    }
 
     // Colocar os triangulos
+    int y = 0; // So pra não mudar
     for (array<int,3> i : indices){
-        triangulos.push_back(triangle(vertices[i[0]], vertices[i[1]], vertices[i[2]], cor));
+        triangulos.push_back(triangle(vertices[i[0]], vertices[i[1]], vertices[i[2]], cores[y++]));
     }
 
     // Todo calcular a normal dos vertices
@@ -120,7 +126,35 @@ int main(){
     tie (esferas, planos) = pegar_objetos();
     Mesh malha = pegar_triangulos();
 
-    // Checar agora a interseção
-    vector<vector<R3Vector>> colors = make_screen(U, V, origem, C, esferas, planos, malha ,altura, largura);
-    print_ppm(colors, altura, largura);
+    // Checar agora a interseção e rotações
+    char choice;
+    while (true){
+        vector<vector<R3Vector>> colors = make_screen(U, V, origem, C, esferas, planos, malha ,altura, largura);
+        print_ppm(colors, altura, largura);
+        cout << "Alguma outra rotacao [y/Y]?\n"; cin >> choice;
+        if (choice != 'y' && choice != 'Y') break;
+        
+        // Especificar rotacao
+        cout << "Rotacao [r/R] ou translacao [t/T]?\n"; cin >>choice;
+        if (choice == 'r' || choice == 'R') break;
+        else if (choice == 't' || choice == 'T'){
+            double dx, dy, dz;
+            cout << "Coloque os valores de dx, dy e dz: ";
+            cin >> dx >> dy >> dz;
+            
+            //mover esferas
+            for (int i = 0; i < esferas.size(); i++){
+                esferas[i].get_sphere()->rotation_translation(dx,dy,dz);
+            }
+            // Mover planos
+            for (int i = 0; i < planos.size(); i++){
+                planos[i].get_plane()->rotation_translation(dx,dy,dz);
+            }
+            // Mover triangulos
+            vector <triangle>* triangulos = malha.get_triangles();
+            for (int i = 0; i < triangulos->size() ; i++){
+                (*triangulos)[i].rotation_translation(dx,dy,dz);
+            }
+        }
+    }
 }

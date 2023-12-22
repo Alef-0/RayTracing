@@ -3,6 +3,8 @@
 
 #include "base.hpp"
 #include "scenes.hpp"
+#include "rotation.cpp"
+
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -10,7 +12,8 @@
 #include <tuple>
 
 using namespace std;
-#define WINDOW 1.0
+#define WINDOW 0.7
+int counter = 0;
 
 tuple <bool, double, R3Vector> checar_colisao(vector<Sphere> esferas, vector<Plane> planos, Mesh malha,
     R3Vector origem, R3Vector direcao){
@@ -34,7 +37,7 @@ tuple <bool, double, R3Vector> checar_colisao(vector<Sphere> esferas, vector<Pla
         }
     }
     // Checar para triangulos
-    for (triangle i : malha.get_triangles()){
+    for (auto i : malha.return_triangles()){
         tie(achou, t) = i.intersect(origem, direcao);
         if (achou && t >= 0 && t < resposta.second){
             resposta = {true,t};
@@ -82,7 +85,9 @@ vector<vector<R3Vector>> make_screen(R3Vector cima, R3Vector direita, R3Vector o
 
 void print_ppm(vector<vector<R3Vector>> colors, int altura, int largura){
     fstream file;
-    file.open("imagem.ppm", ios::out);
+    string nome = "images/imagem" + to_string(counter++) + ".ppm";
+    file.open(nome, ios::out);
+    
     // Criar a imagem
     file << "P3" << endl;
     file << largura << " " << altura << endl;

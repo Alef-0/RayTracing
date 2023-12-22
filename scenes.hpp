@@ -2,16 +2,16 @@
 #define SCENES
     
 #include "base.hpp"
+#include "rotation.cpp"
+
 #include <iostream>
 #include <string>
-#include <format>
 #include <vector>
 #include <array>
+#include <tuple>
 
 using namespace std;
-
 #define SMALL 1.0e-9
-
 
 class Sphere{
     R3Vector centro;
@@ -53,6 +53,12 @@ class Sphere{
     R3Vector get_color(){
         return color;
     }
+    Sphere* get_sphere(){return this;}
+
+    void rotation_translation(double dx, double dy, double dz){
+        this->centro = translation(centro, dx, dy, dz);
+        // Não muda mais nada
+    }
 };
 
 class Plane{
@@ -77,8 +83,12 @@ class Plane{
     }
 
     R3Vector get_color(){return color;}
+    Plane* get_plane(){return this;}
+    void rotation_translation(double dx, double dy, double dz){
+        this->ponto = translation(this->ponto, dx,dy, dz);
+        // Normal permanece
+    }
 };
-
 
 class triangle{
     array<R3Vector, 3> points;
@@ -123,7 +133,7 @@ class triangle{
         double alpha, beta, gamma;
         tie (alpha, beta, gamma) = barycentric_cordinates(alvo);
         // cout << "Valores de alpha: " << alpha << ", beta: " << beta << ", e gamma: " << gamma << endl;
-        if (alpha > 0 && beta > 0 && gamma > 0 && alpha + beta + gamma <= 1) return make_pair(true, t);
+        if (alpha > 0 && beta > 0 && gamma > 0) return make_pair(true, t);
         return make_pair(false, -1);
     }
     tuple<double, double, double> barycentric_cordinates(R3Vector target){
@@ -145,6 +155,14 @@ class triangle{
         }
         return false;
     }
+
+    void rotation_translation(double dx, double dy, double dz){
+        this->points[0] = translation(this->points[0], dx,dy,dz);
+        this->points[1] = translation(this->points[1], dx,dy,dz);
+        this->points[2] = translation(this->points[2], dx,dy,dz);
+        // Como a normal e calculada pelos pontos ela permanecerá igual
+    }
+    
 };
 
 class Mesh{
@@ -161,7 +179,8 @@ class Mesh{
         normal_vertices.resize(vert.size());
     }
 
-    vector<triangle> get_triangles(){return triangulos;}
+    vector<triangle>* get_triangles(){return &triangulos;}
+    vector<triangle> return_triangles(){return triangulos;}
 };
 
 // int main(){
