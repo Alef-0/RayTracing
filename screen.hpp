@@ -22,7 +22,7 @@ tuple <bool, double, R3Vector> checar_colisao(vector<Sphere> esferas, vector<Pla
     // Checar para esferas
     for (Sphere i : esferas){
         tie (achou, t) = i.intersect(origem, direcao);
-        if (achou && t >= 0 && t <= resposta.second){
+        if (achou && t >= 0 && t < resposta.second){
             resposta = {true, t};
             color = i.get_color();
         }
@@ -30,7 +30,7 @@ tuple <bool, double, R3Vector> checar_colisao(vector<Sphere> esferas, vector<Pla
     // Checar para planos
     for (Plane i : planos){
         tie (achou, t) = i.intersect(origem, direcao);
-        if (achou && t >= 0 && t <= resposta.second){
+        if (achou && t >= 0 && t < resposta.second){
             resposta = {true, t};
             color = i.get_color();
         }
@@ -38,7 +38,7 @@ tuple <bool, double, R3Vector> checar_colisao(vector<Sphere> esferas, vector<Pla
     // Checar para triangulos
     for (auto i : malha.return_triangles()){
         tie(achou, t) = i.intersect(origem, direcao);
-        if (achou && t >= 0 && t <= resposta.second){
+        if (achou && t >= 0 && t < resposta.second){
             resposta = {true,t};
             color = i.get_color();
         }

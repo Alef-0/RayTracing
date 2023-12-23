@@ -140,18 +140,20 @@ int main(){
             double angulo;
             cout << "Eixo que voce quer rotacionar e o angulo (graus): ";
             cin >> choice >> angulo ;
-            if (choice != 'x' && choice != 'y' && choice != 'z') {cout << "invalido\n"; break;}
+            if (choice != 'x' && choice != 'y' && choice != 'z') {
+                cout << "invalido\n"; break;
+            }
             
             // Rotacionar centros
             for (int i = 0; i < esferas.size(); i++){
-                esferas[i].get_sphere()->auto_rotation(angulo, choice);
+                esferas[i].auto_rotation(angulo, choice);
             } 
             // Rotacionar planos
             for (int i = 0; i < planos.size(); i++){
-                planos[i].get_plane()->auto_rotation(angulo, choice);
+                planos[i].auto_rotation(angulo, choice);
             } 
             // Rotacionar triangulos
-            vector <triangle>* triangulos = malha.get_triangles();
+            vector <triangle>* triangulos = malha.get_triangles(); //Caso contrario seria por valor
             for (int i = 0; i < triangulos->size() ; i++){
                 (*triangulos)[i].auto_rotation(angulo, choice);
             }
@@ -163,14 +165,14 @@ int main(){
             
             //mover esferas
             for (int i = 0; i < esferas.size(); i++){
-                esferas[i].get_sphere()->auto_translation(dx,dy,dz);
+                esferas[i].auto_translation(dx,dy,dz);
             }
             // Mover planos
             for (int i = 0; i < planos.size(); i++){
-                planos[i].get_plane()->auto_translation(dx,dy,dz);
+                planos[i].auto_translation(dx,dy,dz);
             }
             // Mover triangulos
-            vector <triangle>* triangulos = malha.get_triangles();
+            vector <triangle>* triangulos = malha.get_triangles(); // Caso contrario seria por valor
             for (int i = 0; i < triangulos->size() ; i++){
                 (*triangulos)[i].auto_translation(dx,dy,dz);
             }

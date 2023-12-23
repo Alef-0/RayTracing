@@ -43,9 +43,9 @@ R3Vector scalarProduct(R3Vector a, double scalar){
 double tamanho(R3Vector a){ return sqrt(a.x*a.x + a.y*a.y + a.z*a.z);}
 R3Vector normalize(R3Vector a){
     double total = tamanho(a);
-    a.x = a.x/total;
-    a.y = a.y/total;
-    a.z = a.z/total;
+    a.x = a.x / total;
+    a.y = a.y / total;
+    a.z = a.z / total;
     return a;
 }
 
