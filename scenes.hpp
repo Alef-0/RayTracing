@@ -3,6 +3,7 @@
     
 #include "base.hpp"
 #include "transformations.hpp"
+#include "phong.hpp"
 
 #include <iostream>
 #include <string>
@@ -13,16 +14,20 @@
 using namespace std;
 #define SMALL 1.0e-9
 
-class Sphere{
+class Sphere: public Phong{
+    public:
     R3Vector centro;
     double raio;
     R3Vector color;
 
-    public:
-    Sphere (R3Vector centro, double raio, R3Vector color){
+    Sphere (R3Vector centro, double raio, R3Vector ka, R3Vector kd, R3Vector ks, double rug){
         this->centro = centro;
         this->raio = raio;
         this->color = color;
+        this->k_ambiente = ka;
+        this->k_difuso = kd;
+        this->k_especular = ks;
+        this->rugosidade = rug;
     };
 
     pair<bool, double> intersect (R3Vector origem, R3Vector direcao){
@@ -64,18 +69,20 @@ class Sphere{
     }
 };
 
-class Plane{
+class Plane: public Phong{
+    public:
     R3Vector ponto;
     R3Vector normal;
     R3Vector color;
 
-    public:
-    Plane(R3Vector ponto,R3Vector normal,R3Vector color){
+    Plane(R3Vector ponto,R3Vector normal, R3Vector ka, R3Vector kd, R3Vector ks, double rug){
         this->ponto = ponto;
         this->normal = normal;
-        this->color = color;
+        this->k_ambiente = ka;
+        this->k_difuso = kd;
+        this->k_especular = ks;
+        this->rugosidade = rug;
     }
-
     pair<bool, double> intersect(R3Vector origem, R3Vector direcao){
         double teste_paralelo = dotProduct(normal, direcao);
         if (fabs(teste_paralelo) < SMALL) { 
@@ -97,7 +104,8 @@ class Plane{
     }
 };
 
-class triangle{
+class triangle: public Phong{
+    public:
     array<R3Vector, 3> points;
     R3Vector normal;
     R3Vector color;
@@ -108,12 +116,14 @@ class triangle{
     double invDenom;
     
     // Razão da interseção pode ser referenciada no capítulo 3.4 de Real-Time Collision Detection
-    public:
-    triangle(R3Vector p1, R3Vector p2, R3Vector p3, R3Vector color){
+    triangle(R3Vector p1, R3Vector p2, R3Vector p3, R3Vector ka, R3Vector kd, R3Vector ks, double rug){
         this->points[0] = p1;
         this->points[1] = p2;
         this->points[2] = p3;
-        this->color = color;
+        this->k_ambiente = ka;
+        this->k_difuso = kd;
+        this->k_especular = ks;
+        this->rugosidade = rug;
 
         calcular_constantes();
     }
@@ -168,7 +178,6 @@ class triangle{
         }
         return false;
     }
-
     void auto_translation(double dx, double dy, double dz){
         this->points[0] = translation(this->points[0], dx,dy,dz);
         this->points[1] = translation(this->points[1], dx,dy,dz);

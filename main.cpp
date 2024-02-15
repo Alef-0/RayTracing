@@ -36,37 +36,65 @@ pair<R3Vector, R3Vector>  pegar_inputs(R3Vector* C, R3Vector* M, R3Vector* UP,
     return make_pair(V, U);
 }
 
+pair<R3Vector, vector<Light>> pegar_luzes(){
+    R3Vector ambiente; vector<Light> luzes;
+    cout << "Insira a luz ambiente [0,255] em RGB: ";
+    cin >> ambiente.x >> ambiente.y >> ambiente.z;
+    cout << "Quantas fontes de luzes? ";
+    int quant; cin >> quant;
+    for (int i = 0; i < quant; i++){
+        R3Vector luz, origem;
+        cout << "Origem da luz " << i << " : ";
+        cin >> origem.x >> origem.y >> origem.z;
+        cout << "Cor da luz " << i << " em [0,255] RGB: ";
+        cin >> luz.x >> luz.y >> luz.z;
+        luzes.push_back(Light(origem, luz));
+    }
+    return make_pair(ambiente, luzes);
+}
+
 pair<vector<Sphere>, vector<Plane>> pegar_objetos (){
     int quant;
     vector<Sphere> esferas; vector<Plane> planos;
 
     cout << "Coloque quantas esferas: ";
     cin >> quant; for (int i = 0; i < quant; i++){
-        R3Vector centro, color;
-        double raio;
+        R3Vector centro, ka, kd, ks;
+        double raio, rug;
         cout << i << "- Coloque o centro da esfera (X,Y,Z): ";
         cin >> centro.x >> centro.y >> centro.z;
         cout << i << "- Coloque Agora o raio: ";
         cin >> raio;
-        cout << i << "- Coloque agora a cor (R,G,B) [0,1]: ";
-        cin >> color.x >> color.y >> color.z;
+        cout << i << "- Coloque agora o coeficiente ambiental [0,1]: ";
+        cin >> ka.x >> ka.y >> ka.z;
+        cout << i << "- Coloque agora o coeficiente difuso [0,1]: ";
+        cin >> kd.x >> kd.y >> kd.z;
+        cout << i << "- Coloque agora o coeficiente especular [0,1]: ";
+        cin >> ks.x >> ks.y >> ks.z;
+        cout << i << "- Coloque agora o coeficiente de rugosidade > 0: ";
+        cin >> rug;
         
-        esferas.push_back(Sphere{centro,raio,color});
+        esferas.push_back(Sphere{centro, raio, ka, kd, ks, rug});
     }
-
     cout << "Coloque quantos planos: ";
     cin >> quant; for (int i = 0; i < quant; i++){
-        R3Vector ponto, color, normal;
+        R3Vector ponto, ka, kd, ks, normal;
+        double rug;
         cout << i << "- Agora um ponto do plano (X,Y,Z): ";
         cin >> ponto.x >> ponto.y >> ponto.z;
         cout << i << "- Coloque o vetor normal (X,Y,Z): ";
         cin >> normal.x >> normal.y >> normal.z;
-        cout << i << "- Coloque agora a cor (R,G,B) [0,1]: ";
-        cin >> color.x >> color.y >> color.z;
+        cout << i << "- Coloque agora o coeficiente ambiental [0,1]: ";
+        cin >> ka.x >> ka.y >> ka.z;
+        cout << i << "- Coloque agora o coeficiente difuso [0,1]: ";
+        cin >> kd.x >> kd.y >> kd.z;
+        cout << i << "- Coloque agora o coeficiente especular [0,1]: ";
+        cin >> ks.x >> ks.y >> ks.z;
+        cout << i << "- Coloque agora o coeficiente de rugosidade > 0: ";
+        cin >> rug;
 
-        planos.push_back(Plane{ponto,normal,color});
+        planos.push_back(Plane{ponto,normal, ka, kd, ks, rug});
     }
-
     return make_pair(esferas, planos);
 }
 
@@ -93,18 +121,25 @@ Mesh pegar_triangulos(){
         cin >> a >> b >> c;
         indices.push_back(array<int,3>{a,b,c});
     }
-    cout << "Qual vai ser a cor das meshes (R,G,B) de [0,1]: ";
-    vector<R3Vector> cores; 
-    R3Vector cor;
-    for (int i = 0; i < quant; i++){
-        cin >> cor.x >> cor.y >> cor.z;
-        cores.push_back(cor);
-    }
+    // Pegar agora os outros valores
+    R3Vector ka, kd, ks;
+    double rug;
+    cout <<"- Coloque agora o coeficiente ambiental [0,1]: ";
+    cin >> ka.x >> ka.y >> ka.z;
+    cout <<"- Coloque agora o coeficiente difuso [0,1]: ";
+    cin >> kd.x >> kd.y >> kd.z;
+    cout <<"- Coloque agora o coeficiente especular [0,1]: ";
+    cin >> ks.x >> ks.y >> ks.z;
+    cout <<"- Coloque agora o coeficiente de rugosidade > 0: ";
+    cin >> rug;
+    
 
     // Colocar os triangulos
     int y = 0; // So pra não mudar
     for (array<int,3> i : indices){
-        triangulos.push_back(triangle(vertices[i[0]], vertices[i[1]], vertices[i[2]], cores[y++]));
+        triangulos.push_back(
+            triangle(vertices[i[0]], vertices[i[1]], vertices[i[2]], ka, kd, ks, rug)
+        );
     }
 
     // Todo calcular a normal dos vertices
@@ -122,6 +157,8 @@ int main(){
     R3Vector origem = addVector(C, scalarProduct(W, distancia)); // Pegar a origem da tela
 
     // Pegar agora os objetos das cenas
+    R3Vector ambiente; vector<Light> luzes;
+    tie (ambiente, luzes) = pegar_luzes();
     vector<Sphere> esferas; vector<Plane> planos; 
     tie (esferas, planos) = pegar_objetos();
     Mesh malha = pegar_triangulos();
@@ -129,7 +166,8 @@ int main(){
     // Checar agora a interseção e rotações
     char choice;
     while (true){
-        vector<vector<R3Vector>> colors = make_screen(U, V, origem, C, esferas, planos, malha ,altura, largura);
+        vector<vector<R3Vector>> colors = make_screen(U, V, origem, C, esferas, planos, malha ,
+            altura, largura, ambiente, luzes);
         print_ppm(colors, altura, largura);
         cout << "Alguma outra rotacao [y/Y]?\n"; cin >> choice;
         if (choice != 'y' && choice != 'Y') break;

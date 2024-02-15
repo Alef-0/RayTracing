@@ -8,7 +8,11 @@
 #include <climits>
 #include <tuple>
 #include <array>
-#include <math.h>
+#include <cmath>
+
+#ifndef M_PI // Avoid problems with CMATH on windows
+#define M_PI    3.14159265358979323846
+#endif
 
 using namespace std;
 const double mult_radian = M_PI / 180.0;

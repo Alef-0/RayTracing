@@ -40,6 +40,13 @@ R3Vector scalarProduct(R3Vector a, double scalar){
     a.z *= scalar;
     return a;
 }
+R3Vector simpleProduct(R3Vector a, R3Vector b){
+    R3Vector novo;
+    novo.x = a.x * b.x;
+    novo.y = a.y * b.y;
+    novo.z = a.z * b.z;
+    return novo;
+}
 double tamanho(R3Vector a){ return sqrt(a.x*a.x + a.y*a.y + a.z*a.z);}
 R3Vector normalize(R3Vector a){
     double total = tamanho(a);
