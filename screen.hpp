@@ -14,6 +14,7 @@
 using namespace std;
 #define WINDOW 1.0
 int counter = 0;
+#define LIMIT 0.5 // Isso serve para suavizar as sombras
 
 struct Recursao{ // Servir pro futuro
     R3Vector ponto;
@@ -23,27 +24,24 @@ struct Recursao{ // Servir pro futuro
     bool exist;
 };
 
-bool bloqueada(Everything world, R3Vector alvo, Light luz){
-    double t; bool achou;
+bool bloqueada(Everything world, R3Vector alvo, Light luz, R3Vector normal){
+    double t; bool achou;  
     R3Vector direcao = subVector(luz.origem, alvo);
     double distance = tamanho(direcao);
     direcao = normalize(direcao);
-    // Esferas
-    for (Sphere i : world.esferas){
+    for (Sphere i : world.esferas){ // Esferas
         tie (achou, t) = i.intersect(alvo,direcao);
-        if (achou && t > 0.1 && tamanho(scalarProduct(direcao, t)) < distance) 
+        if (achou && t > LIMIT && tamanho(scalarProduct(direcao, t))<=distance) 
             return true;
     }
-    // Planos
-    for (Plane i : world.planos){
+    for (Plane i : world.planos){ // Planos
         tie (achou, t) = i.intersect(alvo,direcao);
-        if (achou && t > SMALL && tamanho(scalarProduct(direcao, t)) < distance) 
+        if (achou && t > LIMIT && tamanho(scalarProduct(direcao, t))<=distance) 
             return true;
     }
-    // Triangulos
-    for (triangle i : world.triangulos){
+    for (triangle i : world.triangulos){ // Triangulos
         tie (achou, t) = i.intersect(alvo,direcao);
-        if (achou && t > SMALL && tamanho(scalarProduct(direcao, t)) < distance) 
+        if (achou && t > LIMIT && tamanho(scalarProduct(direcao, t))<=distance) 
             return true;
     }
     return false;
@@ -58,16 +56,16 @@ R3Vector phong_pixel(Phong colided, R3Vector origem, vector<Light> luzes,
     // Somar tudo
     for (Light luz : luzes){
         R3Vector L_direcao = normalize(subVector(luz.origem, alvo));
-        // Checar se a luz chega
-        if (bloqueada(world, alvo, luz)){continue;}
+        R3Vector R = subVector(scalarProduct(normal, dotProduct(L_direcao, normal) * 2), L_direcao);
+        R = normalize(R);
+        // Tentativa de fazer sombra, colocado um suavizador
+        if (bloqueada(world, alvo, luz, normal)){continue;} 
         // Difusao
         double LN = max(0.0, dotProduct(L_direcao, normal));
         R3Vector difusao = simpleProduct(colided.k_difuso, luz.intensidade);
         difusao = scalarProduct(difusao, LN);
         answer = addVector(answer, difusao);
         // Especular
-        R3Vector R = subVector(scalarProduct(normal, dotProduct(L_direcao, normal) * 2), L_direcao);
-        R = normalize(R);
         R3Vector especular = simpleProduct(colided.k_especular, luz.intensidade);
         double RVa = pow(max(0.0, dotProduct(R, Viewer)), colided.rugosidade);
         especular = scalarProduct(especular, RVa);
