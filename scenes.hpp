@@ -77,7 +77,7 @@ class Plane: public Phong{
 
     Plane(R3Vector ponto,R3Vector normal, R3Vector ka, R3Vector kd, R3Vector ks, double rug){
         this->ponto = ponto;
-        this->normal = normal;
+        this->normal = normalize(normal);
         this->k_ambiente = ka;
         this->k_difuso = kd;
         this->k_especular = ks;

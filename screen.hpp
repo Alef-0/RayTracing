@@ -38,7 +38,7 @@ Recursao checar_colisao(vector<Sphere> esferas, vector<Plane> planos, Mesh malha
             last_t = t; resposta.exist = true;
             resposta.colided = i;;
             resposta.ponto = addVector(origem, scalarProduct(direcao, t));
-            resposta.normal = normalize(subVector(resposta.ponto, origem)); // caso especial
+            resposta.normal = normalize(subVector(resposta.ponto, i.centro)); // caso especial
         }
     }
     // Checar para planos

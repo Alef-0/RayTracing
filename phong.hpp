@@ -31,9 +31,8 @@ R3Vector phong_pixel(Phong colided, R3Vector origem, vector<Light> luzes,
     // Somar tudo
     for (Light luz : luzes){
         R3Vector L_direcao = normalize(subVector(luz.origem, alvo));
-        if (dotProduct(normal, L_direcao) < 0) continue; // Tem certeza que vai atingir
         // Difusao
-        double LN = dotProduct(L_direcao, normal);
+        double LN = max(0.0, dotProduct(L_direcao, normal));
         R3Vector difusao = simpleProduct(colided.k_difuso, luz.intensidade);
         difusao = scalarProduct(difusao, LN);
         answer = addVector(answer, difusao);
@@ -41,7 +40,7 @@ R3Vector phong_pixel(Phong colided, R3Vector origem, vector<Light> luzes,
         R3Vector R = subVector(scalarProduct(normal, dotProduct(L_direcao, normal) * 2), L_direcao);
         R = normalize(R);
         R3Vector especular = simpleProduct(colided.k_especular, luz.intensidade);
-        double RVa = pow(dotProduct(R, Viewer), colided.rugosidade);
+        double RVa = pow(max(0.0, dotProduct(R, Viewer)), colided.rugosidade);
         especular = scalarProduct(especular, RVa);
         answer = addVector(especular, answer);
     }
