@@ -14,7 +14,7 @@
 using namespace std;
 #define WINDOW 1.0
 int counter = 0;
-#define LIMIT 0.5 // Isso serve para suavizar as sombras
+#define LIMIT 1e-3 // Tentativa de suavizar as sombras
 
 struct Recursao{ // Servir pro futuro
     R3Vector ponto;
@@ -58,8 +58,8 @@ R3Vector phong_pixel(Phong colided, R3Vector origem, vector<Light> luzes,
         R3Vector L_direcao = normalize(subVector(luz.origem, alvo));
         R3Vector R = subVector(scalarProduct(normal, dotProduct(L_direcao, normal) * 2), L_direcao);
         R = normalize(R);
-        // Tentativa de fazer sombra, colocado um suavizador
-        if (bloqueada(world, alvo, luz, normal)){continue;} 
+        // Tentativa de fazer sombra
+        if (bloqueada(world, alvo, luz, normal) || dotProduct(normal, L_direcao) < LIMIT){continue;} 
         // Difusao
         double LN = max(0.0, dotProduct(L_direcao, normal));
         R3Vector difusao = simpleProduct(colided.k_difuso, luz.intensidade);
