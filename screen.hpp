@@ -2,8 +2,7 @@
 #define SCREEN
 
 #include "base.hpp"
-#include "scenes.hpp"
-#include "phong.hpp"
+#include "classes.hpp"
 
 #include <iostream>
 #include <vector>
@@ -24,15 +23,67 @@ struct Recursao{ // Servir pro futuro
     bool exist;
 };
 
-Recursao checar_colisao(vector<Sphere> esferas, vector<Plane> planos, Mesh malha,
-    R3Vector origem, R3Vector direcao){
+bool bloqueada(Everything world, R3Vector alvo, Light luz){
+    double t; bool achou;
+    R3Vector direcao = subVector(luz.origem, alvo);
+    double distance = tamanho(direcao);
+    direcao = normalize(direcao);
+    // Esferas
+    for (Sphere i : world.esferas){
+        tie (achou, t) = i.intersect(alvo,direcao);
+        if (achou && t > 0.1 && tamanho(scalarProduct(direcao, t)) < distance) 
+            return true;
+    }
+    // Planos
+    for (Plane i : world.planos){
+        tie (achou, t) = i.intersect(alvo,direcao);
+        if (achou && t > SMALL && tamanho(scalarProduct(direcao, t)) < distance) 
+            return true;
+    }
+    // Triangulos
+    for (triangle i : world.triangulos){
+        tie (achou, t) = i.intersect(alvo,direcao);
+        if (achou && t > SMALL && tamanho(scalarProduct(direcao, t)) < distance) 
+            return true;
+    }
+    return false;
+}
+
+R3Vector phong_pixel(Phong colided, R3Vector origem, vector<Light> luzes, 
+                    R3Vector luz_ambiente, R3Vector alvo, R3Vector normal,
+                    Everything world){
+    R3Vector answer;
+    R3Vector Viewer = normalize(subVector(origem, alvo)); // Calcular vetores de direcao da pessoa
+    answer = simpleProduct(luz_ambiente, colided.k_ambiente); // Calcular ambiente
+    // Somar tudo
+    for (Light luz : luzes){
+        R3Vector L_direcao = normalize(subVector(luz.origem, alvo));
+        // Checar se a luz chega
+        if (bloqueada(world, alvo, luz)){continue;}
+        // Difusao
+        double LN = max(0.0, dotProduct(L_direcao, normal));
+        R3Vector difusao = simpleProduct(colided.k_difuso, luz.intensidade);
+        difusao = scalarProduct(difusao, LN);
+        answer = addVector(answer, difusao);
+        // Especular
+        R3Vector R = subVector(scalarProduct(normal, dotProduct(L_direcao, normal) * 2), L_direcao);
+        R = normalize(R);
+        R3Vector especular = simpleProduct(colided.k_especular, luz.intensidade);
+        double RVa = pow(max(0.0, dotProduct(R, Viewer)), colided.rugosidade);
+        especular = scalarProduct(especular, RVa);
+        answer = addVector(especular, answer);
+    }
+    return answer;
+}
+
+Recursao checar_colisao(Everything world,R3Vector origem, R3Vector direcao){
     Recursao resposta; resposta.exist = false; //default
     bool achou; double t;
     double last_t = INT_MAX;
     R3Vector color;
     
     // Checar para esferas
-    for (Sphere i : esferas){
+    for (Sphere i : world.esferas){
         tie (achou, t) = i.intersect(origem, direcao);
         if (achou && t >= 0 && t < last_t){
             last_t = t; resposta.exist = true;
@@ -42,7 +93,7 @@ Recursao checar_colisao(vector<Sphere> esferas, vector<Plane> planos, Mesh malha
         }
     }
     // Checar para planos
-    for (Plane i : planos){
+    for (Plane i : world.planos){
         tie (achou, t) = i.intersect(origem, direcao);
         if (achou && t >= 0 && t < last_t){
             last_t = t; resposta.exist = true;
@@ -52,7 +103,7 @@ Recursao checar_colisao(vector<Sphere> esferas, vector<Plane> planos, Mesh malha
         }
     }
     // Checar para triangulos
-    for (auto i : malha.return_triangles()){
+    for (auto i : world.triangulos){
         tie(achou, t) = i.intersect(origem, direcao);
         if (achou && t >= 0 && t < last_t){
             last_t = t; resposta.exist = true;
@@ -66,8 +117,7 @@ Recursao checar_colisao(vector<Sphere> esferas, vector<Plane> planos, Mesh malha
 }
 
 vector<vector<R3Vector>> make_screen(R3Vector cima, R3Vector direita, R3Vector origem, R3Vector camera, 
-    vector<Sphere> esferas, vector<Plane> planos, Mesh triangulos, int altura, int largura,
-    R3Vector ambiente, vector<Light> luzes){
+    Everything world, int altura, int largura, R3Vector ambiente, vector<Light> luzes){
     
     // Ver o deslocamento
     R3Vector des_horizontal = scalarProduct(direita,(double) 2 * WINDOW / (largura - 1));
@@ -86,13 +136,13 @@ vector<vector<R3Vector>> make_screen(R3Vector cima, R3Vector direita, R3Vector o
     for (int x = 0; x < largura; x++){
         for (int y = 0; y < altura; y++){
             R3Vector direcao = subVector(canto_atual, camera); // Pegar o vetor direcao
-            Recursao colisao = checar_colisao(esferas, planos, triangulos, canto_atual, direcao); // Checar a colisao
+            Recursao colisao = checar_colisao(world, canto_atual, direcao); // Checar a colisao
         
             // Implementando Phong
             if (colisao.exist){
                 R3Vector color = phong_pixel(
                     colisao.colided, origem, luzes, ambiente,
-                    colisao.ponto, colisao.normal
+                    colisao.ponto, colisao.normal, world
                 );
                 // Limitar para dar overflow
                 color.x = min(color.x, 255.0);
@@ -130,5 +180,4 @@ void print_ppm(vector<vector<R3Vector>> colors, int altura, int largura){
     }
     file.close();
 }
-
 #endif

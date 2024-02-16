@@ -1,9 +1,8 @@
-#ifndef SCENES
-#define SCENES
+#ifndef CLASSES
+#define CLASSES
     
 #include "base.hpp"
 #include "transformations.hpp"
-#include "phong.hpp"
 
 #include <iostream>
 #include <string>
@@ -14,6 +13,25 @@
 using namespace std;
 #define SMALL 1.0e-9
 
+class Phong{
+    public:
+    R3Vector k_ambiente;
+    R3Vector k_difuso;
+    R3Vector k_especular;
+    double rugosidade;
+};
+
+class Light{
+    public:
+    R3Vector origem;
+    R3Vector intensidade;
+
+    Light (R3Vector orig, R3Vector intens){
+        this->origem = orig;
+        this->intensidade = intens;
+    }
+};
+
 class Sphere: public Phong{
     public:
     R3Vector centro;
@@ -23,7 +41,6 @@ class Sphere: public Phong{
     Sphere (R3Vector centro, double raio, R3Vector ka, R3Vector kd, R3Vector ks, double rug){
         this->centro = centro;
         this->raio = raio;
-        this->color = color;
         this->k_ambiente = ka;
         this->k_difuso = kd;
         this->k_especular = ks;
@@ -54,12 +71,6 @@ class Sphere: public Phong{
             return make_pair(true, t);
         }
     }
-
-    R3Vector get_color(){
-        return color;
-    }
-    Sphere* get_sphere(){return this;}
-
     void auto_translation(double dx, double dy, double dz){
         this->centro = translation(centro, dx, dy, dz);
         // Não muda mais nada
@@ -195,12 +206,12 @@ class triangle: public Phong{
 };
 
 class Mesh{
+    public:
     vector <triangle> triangulos;
     vector <R3Vector> vertices;
     vector <R3Vector> normal_vertices;
     vector <array<int,3>> indices;
 
-    public:
     Mesh(vector<triangle> tri, vector<R3Vector> vert, vector <array<int,3>> ind){
         this->triangulos = tri;
         this->vertices = vert;
@@ -212,18 +223,17 @@ class Mesh{
     vector<triangle> return_triangles(){return triangulos;}
 };
 
-// int main(){
-//     triangle teste = triangle(R3Vector{3,4,5},R3Vector{9,3,2},R3Vector{1,5,6}, R3Vector{1,0,0});
-//     R3Vector origem = {0,0,0};
-//     R3Vector direcao = {5.6,3.7,3.7};
+class Everything{
+    public:
+    vector<Sphere> esferas;
+    vector<Plane> planos;
+    vector<triangle> triangulos;
 
-//     bool vai; double t;
-//     tie (vai, t) = teste.intersect(origem, direcao);
-//     R3Vector ponto = addVector(origem, scalarProduct(direcao, t));
-//     if (vai) {
-//         cout << "Foi em t = " << t;         
-//         printf("; Achou o ponto (%lf, %lf, %lf) \n", ponto.x, ponto.y, ponto.z);
-//     }
-// }
+    Everything(vector<Sphere> esferas,vector<Plane> planos, vector<triangle> triangulos){
+        this->esferas = esferas;
+        this->planos = planos;
+        this->triangulos = triangulos;
+    }
+};
 
 #endif

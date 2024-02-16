@@ -1,5 +1,5 @@
 #include "base.hpp"
-#include "scenes.hpp"
+#include "classes.hpp"
 #include "screen.hpp"
 
 #include <iostream>
@@ -132,18 +132,13 @@ Mesh pegar_triangulos(){
     cin >> ks.x >> ks.y >> ks.z;
     cout <<"- Coloque agora o coeficiente de rugosidade > 0: ";
     cin >> rug;
-    
 
-    // Colocar os triangulos
     int y = 0; // So pra não mudar
     for (array<int,3> i : indices){
         triangulos.push_back(
             triangle(vertices[i[0]], vertices[i[1]], vertices[i[2]], ka, kd, ks, rug)
         );
     }
-
-    // Todo calcular a normal dos vertices
-
     return Mesh(triangulos, vertices, indices);
 }
 
@@ -165,8 +160,9 @@ int main(){
 
     // Checar agora a interseção e rotações
     char choice;
+    Everything world = {esferas, planos, malha.triangulos};
     while (true){
-        vector<vector<R3Vector>> colors = make_screen(U, V, origem, C, esferas, planos, malha ,
+        vector<vector<R3Vector>> colors = make_screen(U, V, origem, C, world,
             altura, largura, ambiente, luzes);
         print_ppm(colors, altura, largura);
         cout << "Alguma outra rotacao [y/Y]?\n"; cin >> choice;
@@ -182,38 +178,18 @@ int main(){
                 cout << "invalido\n"; break;
             }
             
-            // Rotacionar centros
-            for (int i = 0; i < esferas.size(); i++){
-                esferas[i].auto_rotation(angulo, choice);
-            } 
-            // Rotacionar planos
-            for (int i = 0; i < planos.size(); i++){
-                planos[i].auto_rotation(angulo, choice);
-            } 
-            // Rotacionar triangulos
-            vector <triangle>* triangulos = malha.get_triangles(); //Caso contrario seria por valor
-            for (int i = 0; i < triangulos->size() ; i++){
-                (*triangulos)[i].auto_rotation(angulo, choice);
-            }
+            for (int i=0;i<world.esferas.size();i++){esferas[i].auto_rotation(angulo, choice);} 
+            for (int i=0;i<world.planos.size();i++){world.planos[i].auto_rotation(angulo, choice);} 
+            for (int i=0;i<world.triangulos.size();i++){world.triangulos[i].auto_rotation(angulo, choice);}
         }
         else if (choice == 't' || choice == 'T'){
             double dx, dy, dz;
             cout << "Coloque os valores de dx, dy e dz: ";
             cin >> dx >> dy >> dz;
             
-            //mover esferas
-            for (int i = 0; i < esferas.size(); i++){
-                esferas[i].auto_translation(dx,dy,dz);
-            }
-            // Mover planos
-            for (int i = 0; i < planos.size(); i++){
-                planos[i].auto_translation(dx,dy,dz);
-            }
-            // Mover triangulos
-            vector <triangle>* triangulos = malha.get_triangles(); // Caso contrario seria por valor
-            for (int i = 0; i < triangulos->size() ; i++){
-                (*triangulos)[i].auto_translation(dx,dy,dz);
-            }
+            for (int i=0;i<world.esferas.size();i++){world.esferas[i].auto_translation(dx,dy,dz);}
+            for (int i=0;i<world.planos.size();i++){world.planos[i].auto_translation(dx,dy,dz);}
+            for (int i=0;i<world.triangulos.size();i++){world.triangulos[i].auto_translation(dx,dy,dz);}
         }
         else break;
     }
