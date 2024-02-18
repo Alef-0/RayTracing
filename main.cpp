@@ -169,11 +169,11 @@ int main(){
             double angulo;
             cout << "Eixo que voce quer rotacionar e o angulo (graus): ";
             cin >> choice >> angulo ;
-            if (choice != 'x' && choice != 'y' && choice != 'z') {
+            if (choice != 'x' && choice != 'y' && choice != 'z' && choice != 'X' && choice != 'Y' && choice != 'Z') {
                 cout << "invalido\n"; break;
             }
             
-            for (int i=0;i<world.esferas.size();i++){esferas[i].auto_rotation(angulo, choice);} 
+            for (int i=0;i<world.esferas.size();i++){world.esferas[i].auto_rotation(angulo, choice);} 
             for (int i=0;i<world.planos.size();i++){world.planos[i].auto_rotation(angulo, choice);} 
             for (int i=0;i<world.triangulos.size();i++){world.triangulos[i].auto_rotation(angulo, choice);}
         }

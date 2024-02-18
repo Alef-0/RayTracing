@@ -56,6 +56,9 @@ R3Vector rotation_all(R3Vector ponto, double angle, char choice){
         case 'x': novo = rotation_x(ponto, angle); break;
         case 'y': novo = rotation_y(ponto, angle); break;
         case 'z': novo = rotation_z(ponto, angle); break;
+        case 'X': novo = rotation_x(ponto, angle); break;
+        case 'Y': novo = rotation_y(ponto, angle); break;
+        case 'Z': novo = rotation_z(ponto, angle); break;
     }
     return novo;
 }
