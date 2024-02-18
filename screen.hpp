@@ -88,6 +88,8 @@ Recursao checar_colisao(Everything world,R3Vector origem, R3Vector direcao){
             resposta.colided = i;;
             resposta.ponto = addVector(origem, scalarProduct(direcao, t));
             resposta.normal = normalize(subVector(resposta.ponto, i.centro)); // caso especial
+            // Ver a direcao certa
+            if (dotProduct(resposta.normal, direcao) > 0) resposta.normal = scalarProduct(resposta.normal, -1.0);
         }
     }
     // Checar para planos
@@ -97,6 +99,8 @@ Recursao checar_colisao(Everything world,R3Vector origem, R3Vector direcao){
             last_t = t; resposta.exist = true;
             resposta.colided = i;
             resposta.ponto = addVector(origem, scalarProduct(direcao, t));
+            // Ver a direcao certa
+            if (dotProduct(i.normal, direcao) > 0) resposta.normal = scalarProduct(i.normal, -1.0);
             resposta.normal = i.normal;
         }
     }
@@ -107,6 +111,7 @@ Recursao checar_colisao(Everything world,R3Vector origem, R3Vector direcao){
             last_t = t; resposta.exist = true;
             resposta.colided = i;
             resposta.ponto = addVector(origem, scalarProduct(direcao, t));
+            if (dotProduct(i.normal, direcao) > 0) resposta.normal = scalarProduct(i.normal, -1.0);
             resposta.normal = i.normal;
         }
     }

@@ -115,18 +115,13 @@ Mesh pegar_triangulos(){
         vertices.push_back(ponto);
     }
     
-    cout << "Coloque agora os pares de vertice que formam cada triangulo, com o indice de onde eles estao: " << endl;
+    R3Vector ka, kd, ks;
+    double rug;
+    cout << "Coloque agora os pares de vertice que formam cada triangulo, com o indice de onde eles estao, e suas propriedades: " << endl;
     for (int i = 0; i < quant; i++){
         int a, b, c;
+        cout << i << "-Coloque os indices: ";
         cin >> a >> b >> c;
-        indices.push_back(array<int,3>{a,b,c});
-    }
-
-    // Pegar agora os outros valores
-    int i = 0;
-    for (array<int,3> x : indices){
-        R3Vector ka, kd, ks;
-        double rug;
         cout << i << "- Coloque agora o coeficiente ambiental [0,1]: ";
         cin >> ka.x >> ka.y >> ka.z;
         cout << i << "- Coloque agora o coeficiente difuso [0,1]: ";
@@ -134,9 +129,9 @@ Mesh pegar_triangulos(){
         cout << i << "- Coloque agora o coeficiente especular [0,1]: ";
         cin >> ks.x >> ks.y >> ks.z;
         cout << i << "- Coloque agora o coeficiente de rugosidade > 0: ";
-        cin >> rug; i++;
+        cin >> rug;
         triangulos.push_back(
-            triangle(vertices[x[0]], vertices[x[1]], vertices[x[2]], ka, kd, ks, rug)
+            triangle(vertices[a], vertices[b], vertices[c], ka, kd, ks, rug)
         );
     }
     return Mesh(triangulos, vertices, indices);

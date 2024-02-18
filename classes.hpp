@@ -36,7 +36,6 @@ class Sphere: public Phong{
     public:
     R3Vector centro;
     double raio;
-    R3Vector color;
 
     Sphere (R3Vector centro, double raio, R3Vector ka, R3Vector kd, R3Vector ks, double rug){
         this->centro = centro;
@@ -84,7 +83,6 @@ class Plane: public Phong{
     public:
     R3Vector ponto;
     R3Vector normal;
-    R3Vector color;
 
     Plane(R3Vector ponto,R3Vector normal, R3Vector ka, R3Vector kd, R3Vector ks, double rug){
         this->ponto = ponto;
@@ -103,7 +101,6 @@ class Plane: public Phong{
         return make_pair(true, t);
     }
 
-    R3Vector get_color(){return color;}
     Plane* get_plane(){return this;}
     void auto_translation(double dx, double dy, double dz){
         this->ponto = translation(this->ponto, dx,dy, dz);
@@ -119,7 +116,6 @@ class triangle: public Phong{
     public:
     array<R3Vector, 3> points;
     R3Vector normal;
-    R3Vector color;
     
     // Values to cache
     R3Vector v0, v1;
@@ -182,7 +178,6 @@ class triangle: public Phong{
         double alpha = 1.0 - beta - gamma;
         return make_tuple(alpha, beta, gamma);
     }
-    R3Vector get_color() {return color;}
     bool contem(R3Vector alvo){
         for (R3Vector p : points){
             if (p.x == alvo.x && p.y == alvo.y && p.z == alvo.z) return true;
