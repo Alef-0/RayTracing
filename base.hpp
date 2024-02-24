@@ -56,10 +56,13 @@ R3Vector normalize(R3Vector a){
     return a;
 }
 
-R3Vector reflect(R3Vector normal, R3Vector light){ // Todos os valores precisão estar normalizados e saindo da superficie
-    double value = dotProduct(normal, light) * 2.0;
+R3Vector reflect(R3Vector normal, R3Vector vector){ // Todos os valores precisão estar normalizados e saindo da superficie
+    double value = dotProduct(normal, vector) * 2.0;
     R3Vector left = scalarProduct(normal, value);
-    return normalize(subVector(left, light));
+    return normalize(subVector(left, vector));
+}
+double distancia(R3Vector a, R3Vector b){
+    return tamanho(subVector(a, b));
 }
 
 
