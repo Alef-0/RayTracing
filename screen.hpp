@@ -22,9 +22,10 @@ struct Recursao{ // Servir pro futuro
     
     Phong colided;
     bool exist;
+    bool plane;
 };
 
-bool bloqueada(Everything world, R3Vector alvo, Light luz, R3Vector normal){
+bool bloqueada(Everything world, R3Vector alvo, Light luz, R3Vector normal){ // Sombra esquece
     double t; bool achou;  
     R3Vector direcao = subVector(luz.origem, alvo);
     double distance = tamanho(direcao);
@@ -50,27 +51,31 @@ bool bloqueada(Everything world, R3Vector alvo, Light luz, R3Vector normal){
 R3Vector phong_pixel(Phong colided, R3Vector origem, vector<Light> luzes, 
                     R3Vector luz_ambiente, R3Vector alvo, R3Vector normal,
                     Everything world){
+
     R3Vector answer;
     R3Vector Viewer = normalize(subVector(origem, alvo)); // Calcular vetores de direcao da pessoa
     answer = simpleProduct(luz_ambiente, colided.k_ambiente); // Calcular ambiente
     // Somar tudo
     for (Light luz : luzes){
         R3Vector L_direcao = normalize(subVector(luz.origem, alvo));
-        R3Vector R = subVector(scalarProduct(normal, dotProduct(L_direcao, normal) * 2), L_direcao);
-        R = normalize(R);
+        R3Vector R = reflect(normal, L_direcao);
         // Tentativa de fazer sombra
-        if (bloqueada(world, alvo, luz, normal) || dotProduct(normal, L_direcao) < LIMIT){continue;} 
+        // if (bloqueada(world, alvo, luz, normal) || dotProduct(normal, L_direcao) < LIMIT){continue;} // Não quero pensar em problemas
+        
         // Difusao
         double LN = max(0.0, dotProduct(L_direcao, normal));
         R3Vector difusao = simpleProduct(colided.k_difuso, luz.intensidade);
         difusao = scalarProduct(difusao, LN);
         answer = addVector(answer, difusao);
+        
         // Especular
         R3Vector especular = simpleProduct(colided.k_especular, luz.intensidade);
         double RVa = pow(max(0.0, dotProduct(R, Viewer)), colided.rugosidade);
         especular = scalarProduct(especular, RVa);
         answer = addVector(especular, answer);
     }
+    // Recursão
+
     return answer;
 }
 
@@ -89,7 +94,10 @@ Recursao checar_colisao(Everything world,R3Vector origem, R3Vector direcao){
             resposta.ponto = addVector(origem, scalarProduct(direcao, t));
             resposta.normal = normalize(subVector(resposta.ponto, i.centro)); // caso especial
             // Ver a direcao certa
-            if (dotProduct(resposta.normal, direcao) > 0) resposta.normal = scalarProduct(resposta.normal, -1.0);
+            if (dotProduct(resposta.normal, direcao) > 0) {
+                resposta.normal = scalarProduct(resposta.normal, -1.0);
+            }
+            resposta.plane = false;
         }
     }
     // Checar para planos
@@ -102,6 +110,7 @@ Recursao checar_colisao(Everything world,R3Vector origem, R3Vector direcao){
             // Ver a direcao certa
             if (dotProduct(i.normal, direcao) > 0) resposta.normal = scalarProduct(i.normal, -1.0);
             resposta.normal = i.normal;
+            resposta.plane = true;
         }
     }
     // Checar para triangulos
@@ -113,6 +122,7 @@ Recursao checar_colisao(Everything world,R3Vector origem, R3Vector direcao){
             resposta.ponto = addVector(origem, scalarProduct(direcao, t));
             if (dotProduct(i.normal, direcao) > 0) resposta.normal = scalarProduct(i.normal, -1.0);
             resposta.normal = i.normal;
+            resposta.plane = true;
         }
     }
 

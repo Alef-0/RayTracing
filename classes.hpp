@@ -19,6 +19,10 @@ class Phong{
     R3Vector k_difuso;
     R3Vector k_especular;
     double rugosidade;
+
+    R3Vector k_refracao;
+    R3Vector k_transmissao;
+    double IOR;
 };
 
 class Light{
@@ -37,13 +41,17 @@ class Sphere: public Phong{
     R3Vector centro;
     double raio;
 
-    Sphere (R3Vector centro, double raio, R3Vector ka, R3Vector kd, R3Vector ks, double rug){
+    Sphere (R3Vector centro, double raio, R3Vector ka, R3Vector kd, R3Vector ks, double rug,
+        R3Vector k_r, R3Vector k_t, double IOR){
         this->centro = centro;
         this->raio = raio;
         this->k_ambiente = ka;
         this->k_difuso = kd;
         this->k_especular = ks;
         this->rugosidade = rug;
+        this->k_refracao = k_r;
+        this->k_transmissao = k_t;
+        this->IOR = IOR;
     };
 
     pair<bool, double> intersect (R3Vector origem, R3Vector direcao){
@@ -84,13 +92,17 @@ class Plane: public Phong{
     R3Vector ponto;
     R3Vector normal;
 
-    Plane(R3Vector ponto,R3Vector normal, R3Vector ka, R3Vector kd, R3Vector ks, double rug){
+    Plane(R3Vector ponto,R3Vector normal, R3Vector ka, R3Vector kd, R3Vector ks, double rug,
+        R3Vector k_r, R3Vector k_t, double IOR){
         this->ponto = ponto;
         this->normal = normalize(normal);
         this->k_ambiente = ka;
         this->k_difuso = kd;
         this->k_especular = ks;
         this->rugosidade = rug;
+        this->k_refracao = k_r;
+        this->k_transmissao = k_t;
+        this->IOR = IOR;
     }
     pair<bool, double> intersect(R3Vector origem, R3Vector direcao){
         double teste_paralelo = dotProduct(normal, direcao);
@@ -123,7 +135,8 @@ class triangle: public Phong{
     double invDenom;
     
     // Razão da interseção pode ser referenciada no capítulo 3.4 de Real-Time Collision Detection
-    triangle(R3Vector p1, R3Vector p2, R3Vector p3, R3Vector ka, R3Vector kd, R3Vector ks, double rug){
+    triangle(R3Vector p1, R3Vector p2, R3Vector p3, R3Vector ka, R3Vector kd, R3Vector ks, double rug,
+        R3Vector k_r, R3Vector k_t, double IOR){
         this->points[0] = p1;
         this->points[1] = p2;
         this->points[2] = p3;
@@ -131,6 +144,9 @@ class triangle: public Phong{
         this->k_difuso = kd;
         this->k_especular = ks;
         this->rugosidade = rug;
+        this->k_refracao = k_r;
+        this->k_transmissao = k_t;
+        this->IOR = IOR;
 
         calcular_constantes();
     }

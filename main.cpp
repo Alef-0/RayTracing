@@ -59,8 +59,8 @@ pair<vector<Sphere>, vector<Plane>> pegar_objetos (){
 
     cout << "Coloque quantas esferas: ";
     cin >> quant; for (int i = 0; i < quant; i++){
-        R3Vector centro, ka, kd, ks;
-        double raio, rug;
+        R3Vector centro, ka, kd, ks, kr, kt;
+        double raio, rug, IOR;
         cout << i << "- Coloque o centro da esfera (X,Y,Z): ";
         cin >> centro.x >> centro.y >> centro.z;
         cout << i << "- Coloque Agora o raio: ";
@@ -73,13 +73,19 @@ pair<vector<Sphere>, vector<Plane>> pegar_objetos (){
         cin >> ks.x >> ks.y >> ks.z;
         cout << i << "- Coloque agora o coeficiente de rugosidade > 0: ";
         cin >> rug;
+        cout << i << "- Coloque agora o coeficiente de reflexao: ";
+        cin >> kr.x >> kr.y >> kr.z;
+        cout << i << "- Coloque agora o coeficiente de transmissao: ";
+        cin >> kt.x >> kt.y >> kt.z;
+        cout << i << "- Coloque agora o indice de refracao: ";
+        cin >> IOR;
         
-        esferas.push_back(Sphere{centro, raio, ka, kd, ks, rug});
+        esferas.push_back(Sphere{centro, raio, ka, kd, ks, rug, kr, kt, IOR});
     }
     cout << "Coloque quantos planos: ";
     cin >> quant; for (int i = 0; i < quant; i++){
-        R3Vector ponto, ka, kd, ks, normal;
-        double rug;
+        R3Vector ponto, ka, kd, ks, normal, kr, kt;
+        double rug, IOR;
         cout << i << "- Agora um ponto do plano (X,Y,Z): ";
         cin >> ponto.x >> ponto.y >> ponto.z;
         cout << i << "- Coloque o vetor normal (X,Y,Z): ";
@@ -92,8 +98,14 @@ pair<vector<Sphere>, vector<Plane>> pegar_objetos (){
         cin >> ks.x >> ks.y >> ks.z;
         cout << i << "- Coloque agora o coeficiente de rugosidade > 0: ";
         cin >> rug;
+        cout << i << "- Coloque agora o coeficiente de reflexao: ";
+        cin >> kr.x >> kr.y >> kr.z;
+        cout << i << "- Coloque agora o coeficiente de transmissao: ";
+        cin >> kt.x >> kt.y >> kt.z;
+        cout << i << "- Coloque agora o indice de refracao: ";
+        cin >> IOR;
 
-        planos.push_back(Plane{ponto,normal, ka, kd, ks, rug});
+        planos.push_back(Plane{ponto,normal, ka, kd, ks, rug, kr, kt, IOR});
     }
     return make_pair(esferas, planos);
 }
@@ -115,8 +127,8 @@ Mesh pegar_triangulos(){
         vertices.push_back(ponto);
     }
     
-    R3Vector ka, kd, ks;
-    double rug;
+    R3Vector ka, kd, ks, kr, kt;
+    double rug, IOR;
     cout << "Coloque agora os pares de vertice que formam cada triangulo, com o indice de onde eles estao, e suas propriedades: " << endl;
     for (int i = 0; i < quant; i++){
         int a, b, c;
@@ -130,8 +142,14 @@ Mesh pegar_triangulos(){
         cin >> ks.x >> ks.y >> ks.z;
         cout << i << "- Coloque agora o coeficiente de rugosidade > 0: ";
         cin >> rug;
+        cout << i << "- Coloque agora o coeficiente de reflexao: ";
+        cin >> kr.x >> kr.y >> kr.z;
+        cout << i << "- Coloque agora o coeficiente de transmissao: ";
+        cin >> kt.x >> kt.y >> kt.z;
+        cout << i << "- Coloque agora o indice de refracao: ";
+        cin >> IOR;
         triangulos.push_back(
-            triangle(vertices[a], vertices[b], vertices[c], ka, kd, ks, rug)
+            triangle(vertices[a], vertices[b], vertices[c], ka, kd, ks, rug, kr, kt, IOR)
         );
     }
     return Mesh(triangulos, vertices, indices);
