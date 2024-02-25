@@ -150,7 +150,15 @@ R3Vector phong_pixel(Recursao alvo, R3Vector origem, vector<Light> luzes,
             R3Vector color = phong_pixel(checar, alvo.ponto, luzes, luz_ambiente, world, depth + 1);
             answer = addVector(answer, color);
         }
+
+        R3Vector refracted_vision = refract(alvo.normal, Viewer, alvo.colided.IOR, depth);
+        checar = checar_colisao(world, alvo.ponto, refracted_vision);
+        if (checar.exist){
+            R3Vector color = phong_pixel(checar, alvo.ponto, luzes, luz_ambiente, world, depth + 1);
+            answer = addVector(answer, color);
+        }
     }
+
 
     return answer;
 }

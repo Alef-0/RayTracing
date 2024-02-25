@@ -138,7 +138,7 @@ Mesh pegar_triangulos(){
         cin >> ka.x >> ka.y >> ka.z;
         cout << i << "- Coloque agora o coeficiente difuso [0,1]: ";
         cin >> kd.x >> kd.y >> kd.z;
-        cout << i << "- Coloque agora o coeficiente especular [0,1]: ";
+        cout << i << "- Coloque agora o coeficiente especular  [0,1]: ";
         cin >> ks.x >> ks.y >> ks.z;
         cout << i << "- Coloque agora o coeficiente de rugosidade > 0: ";
         cin >> rug;
